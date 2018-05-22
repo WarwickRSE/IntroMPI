@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define ITS 10000000
+#include <mpi.h>
+#define ITS 10000
 
 void seed_rng(){
   time_t t;
-  srand((unsigned) time(&t));
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  srand((unsigned) time(&t) + rank);
 }
 
 double get_random_in_range(){
@@ -15,6 +18,7 @@ double get_random_in_range(){
 int main(int argc, char **argv){
   int count = 0, index;
   double d1, d2;
+  MPI_Init(&argc, &argv);
   seed_rng();
   for (index=0;index<ITS;++index){
     /* random numbers between ±1*/
@@ -23,4 +27,5 @@ int main(int argc, char **argv){
     if (d1*d1 + d2*d2 <= 1) count ++;
   }
   printf("%i,%i\n", count, ITS);
+  MPI_Finalize();
 }
