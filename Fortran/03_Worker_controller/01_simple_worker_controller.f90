@@ -38,10 +38,11 @@ MODULE fns
       !you don't always know how much work there is to be done until it is
       !all finished
 
-    CALL seed_rng()
+!    CALL seed_rng()
     DO
       !Wait to receive any data. On the first pass tag will be 0 which is
       !Just the workers saying that they are ready
+      !Note that "stat" is just an array, that we acccess by index later
       CALL MPI_RECV(result, 1, MPI_INTEGER, MPI_ANY_SOURCE, MPI_ANY_TAG, &
           MPI_COMM_WORLD, stat, errcode)
 
@@ -49,6 +50,12 @@ MODULE fns
       !This is OK until you have enough results that they can't be stored
       !in a 32 bit integer but for a test case it's good enough
       !Tag = 0 is first check in rather than a returned result
+      !You can get various bits of information from the stat array, but
+      !The ones that we use here are 
+      !stat(MPI_TAG) - The tag value for the received message
+      !stat(MPI_SOURCE) - The rank number of the process that sent the message
+      !We have to get this information from the status variable because 
+      !we received the message with MPI_ANY_SOURCE and MPI_ANY_TAG
       IF (stat(MPI_TAG) > 0) THEN
          inflight = inflight - 1 ! You have one fewer inflight transaction
          results(stat(MPI_TAG)) = result
@@ -123,6 +130,7 @@ MODULE fns
       !as each other 
       CALL RANDOM_NUMBER(wait_time)
       wait_time = wait_time * 0.1 !Maximum of 0.1 second wait
+      wait_time = REAL(package, KIND(1.D0))/1000.0
       start_time = MPI_WTIME()!Get start time
       DO WHILE(MPI_WTIME()-start_time < wait_time)
       END DO
