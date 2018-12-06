@@ -38,6 +38,8 @@ MODULE fns
       !you don't always know how much work there is to be done until it is
       !all finished
 
+    !Uncomment this call to have random rather than deterministic run to run
+    !Timing
 !    CALL seed_rng()
     DO
       !Wait to receive any data. On the first pass tag will be 0 which is
@@ -108,8 +110,6 @@ MODULE fns
     INTEGER :: package, result, tag, errcode
     REAL(KIND=KIND(1.D0)) :: start_time, wait_time
 
-    CALL seed_rng() !Set up the random number generator
-
     !First just call home to say "I'm here and I'm waiting"
     !So send -1 message and 0 tag to rank 0
     CALL MPI_SEND(-1, 1, MPI_INTEGER, 0, 0, MPI_COMM_WORLD, errcode)
@@ -125,11 +125,9 @@ MODULE fns
       !Do the work
       result = package * 2
 
-      !Now wait for a random time. This is to simulate the fact that
-      !in most real problems like this not all of the tasks are as easy
-      !as each other 
-      CALL RANDOM_NUMBER(wait_time)
-      wait_time = wait_time * 0.1 !Maximum of 0.1 second wait
+      !Now wait for as many microseconds as are in the work package
+      !value. This is to simulate different work packages having different
+      !difficulties
       wait_time = REAL(package, KIND(1.D0))/1000.0
       start_time = MPI_WTIME()!Get start time
       DO WHILE(MPI_WTIME()-start_time < wait_time)

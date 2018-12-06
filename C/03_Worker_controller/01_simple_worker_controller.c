@@ -26,6 +26,9 @@ void seed_rng(){
       //you don't always know how much work there is to be done until it is
       //all finished
 
+    //Uncomment this call to have random rather than deterministic run to run
+    //Timing
+    //seed_rng()
     for(;;) {
       //Wait to receive any data. On the first pass tag will be 0 which is
       //Just the workers saying that they are ready
