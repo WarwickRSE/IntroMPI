@@ -1,0 +1,8 @@
+This Fortran uses something you may not have seen commonly, namely the
+preprocessor. To exclude the User-interface we set the
+variable NODISPLAY variable when compiling. So we do something like
+
+mpif90 -DNODISPLAY parallel.F90 -o parallel
+
+Notice that the file is now named with a capital F. This can be used to mean
+"Run the preprocessor on this file" on systems with Case-sensitive file systems.
