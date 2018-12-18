@@ -37,7 +37,7 @@ void bcs(grid_type *data)
 
   MPI_Sendrecv(src, ny_local, MPI_FLOAT, x_min_rank,
       TAG, dest, ny_local, MPI_FLOAT, x_max_rank,
-      TAG, cart_comm, MPI_STATUS_IGNORE);
+      TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
   for (index = 1; index<=ny_local; ++index){
     *(access_grid(data, nx_local + 1, index )) = dest[index-1];
@@ -50,7 +50,7 @@ void bcs(grid_type *data)
   }
   MPI_Sendrecv(src, ny_local, MPI_FLOAT,
       x_max_rank, TAG, dest, ny_local, MPI_FLOAT, x_min_rank,
-      TAG, cart_comm, MPI_STATUS_IGNORE);
+      TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   for (index = 1; index<=ny_local; ++index){
     *(access_grid(data, 0, index )) = dest[index-1];
   }
@@ -68,7 +68,7 @@ void bcs(grid_type *data)
   }
   MPI_Sendrecv(src, nx_local, MPI_FLOAT, y_min_rank,
       TAG, dest, nx_local, MPI_FLOAT, y_max_rank,
-      TAG, cart_comm, MPI_STATUS_IGNORE);
+      TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
   for (index = 1; index<=nx_local; ++index){
     *(access_grid(data, index, ny_local + 1)) = dest[index-1];
@@ -80,7 +80,7 @@ void bcs(grid_type *data)
   }
   MPI_Sendrecv(src, nx_local, MPI_FLOAT, y_max_rank,
       TAG, dest, nx_local, MPI_FLOAT, y_min_rank,
-      TAG, cart_comm, MPI_STATUS_IGNORE);
+      TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
   for (index = 1; index<=nx_local; ++index){
     *(access_grid(data, index, 0)) = dest[index-1];
