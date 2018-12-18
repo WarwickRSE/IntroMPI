@@ -146,9 +146,11 @@ MODULE display
     CALL MPI_Barrier(MPI_COMM_WORLD, ierr)
     CALL MPI_Dims_create(nproc, 2, nprocs, ierr)
 
+#ifndef NODISPLAY
     IF (rank == 0) THEN
       PRINT *,'Processor decomposition is ', nprocs
     ENDIF
+#endif
     CALL MPI_Barrier(MPI_COMM_WORLD, ierr)
 
     !Divide the global size (nx x ny) per processor
@@ -184,7 +186,7 @@ MODULE display
 
 END MODULE display
 
-PROGRAM serial
+PROGRAM parallel
 
   USE display
 
@@ -207,19 +209,24 @@ PROGRAM serial
 
   values = 5.5
 
+#ifndef NODISPLAY
   IF (rank == 0) THEN
     PRINT *,'Please press a key to start iterating'
     READ(*,*)
   END IF
+#endif
   CALL MPI_Barrier(MPI_COMM_WORLD, ierr)
 
   !Gather everything on rank 0 for display
   CALL gather_to_zero
+
+#ifndef NODISPLAY
   IF (rank == 0) THEN
     CALL display_result(values)
     PRINT *,'Please press a key to advance'
     READ(*,*)
   END IF
+#endif
   CALL MPI_Barrier(MPI_COMM_WORLD, ierr)
   !Now iterate
   DO icycle = 1, 500
@@ -240,14 +247,16 @@ PROGRAM serial
     !And output by gathering on rank 0
     IF (MOD(icycle,50) == 0) THEN
       CALL gather_to_zero
+#ifndef NODISPLAY
       IF (rank == 0) THEN
         CALL display_result(values)
         PRINT *,'Please press a key to advance'
         READ (*,*)
       END IF
+#endif
     END IF
   END DO
 
   CALL MPI_Finalize(ierr)
 
-END PROGRAM serial
+END PROGRAM parallel
