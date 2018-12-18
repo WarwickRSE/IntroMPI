@@ -26,11 +26,13 @@ void setup_mpi(int *argc, char *** argv)
 
     MPI_Dims_create(nproc, 2, nprocs);
 
+#ifndef NODISPLAY
     if (rank == 0) {
       printf("Processor decomposition is %3d %3d\n", nprocs[0], nprocs[1]);
       printf("Please press a key to continue\n");
       getchar();
     }
+#endif
     MPI_Barrier(MPI_COMM_WORLD);
 
     //Divide the global size (nx x ny) per processor

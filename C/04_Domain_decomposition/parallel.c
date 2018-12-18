@@ -107,12 +107,14 @@ int main(int argc, char ** argv)
 
   bcs(&values_local);
   gather_to_zero(&values, &values_local);
+
+#ifndef NODISPLAY
   if (rank == 0) {
     display_result(&values);
     printf("Please press a key to advance\n");
     getchar();
   }
-
+#endif
   //To a C programmer, this looks backwards, but the array is using
   //Fortran ordering deliberately
   for (icycle=0;icycle<500;++icycle){
@@ -129,11 +131,13 @@ int main(int argc, char ** argv)
     bcs(&values_local);
     if(icycle%50==0){
       gather_to_zero(&values, &values_local);
+#ifndef NODISPLAY
       if(rank == 0) {
         display_result(&values);
         printf("Please press a key to advance\n");
         getchar();
       }
+#endif
     }
   }
   deallocate_grid(&values);
